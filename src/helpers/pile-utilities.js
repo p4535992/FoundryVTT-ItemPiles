@@ -2003,8 +2003,13 @@ export async function rollTable({
 	const items = [];
 
 	rolledItems.forEach(newItem => {
-
-		const existingItem = items.find((item) => item.documentId === newItem.documentId);
+		const existingItem = items.find((item) => {
+			if (item.documentId && newItem.documentId) {
+				return item.documentId === newItem.documentId;
+			} else {
+				return item._id === newItem._id;
+			}
+		});
 		if (existingItem) {
 			existingItem.quantity += Math.max(newItem.quantity, 1);
 		} else {
@@ -2096,7 +2101,13 @@ export async function rollMerchantTables({ tableData = false, actor = false } = 
 		}
 
 		tableItems.forEach(newItem => {
-			const existingItem = items.find((item) => item.documentId === newItem.documentId);
+			const existingItem = items.find((item) => {
+                if (item.documentId && newItem.documentId) {
+                    return item.documentId === newItem.documentId;
+                } else {
+                    return item._id === newItem._id;
+                }
+            });
 			if (existingItem) {
 				existingItem.quantity += Math.max(newItem.quantity, 1);
 			} else {
