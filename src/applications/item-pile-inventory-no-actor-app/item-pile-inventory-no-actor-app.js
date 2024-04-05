@@ -11,13 +11,13 @@ export default class ItemPileInventoryApp extends SvelteApplication {
 
 	/**
 	 *
-	 * @param actor
-	 * @param recipient
-	 * @param overrides
-	 * @param options
-	 * @param dialogData
+	 * @param {Actor} actor
+	 * @param {ItemData[]} recipientItemsData
+	 * @param {object} overrides
+	 * @param {object} options
+	 * @param {object} dialogData
 	 */
-	constructor(actor, recipient, options = {}, dialogData = {}) {
+	constructor(actor, recipientItemsData, options = {}, dialogData = {}) {
 		super({
 			id: `item-pile-inventory-no-actor-${actor?.token?.id ?? actor.id}-${randomID()}`,
 			title: actor.name,
@@ -26,7 +26,7 @@ export default class ItemPileInventoryApp extends SvelteApplication {
 				target: document.body,
 				props: {
 					actor,
-					recipient
+					recipientItemsData
 				}
 			},
 			zIndex: 100,
@@ -34,9 +34,9 @@ export default class ItemPileInventoryApp extends SvelteApplication {
 		}, dialogData);
 
 		this.actor = actor;
-		this.recipient = recipient;
+		this.recipientItemsData = recipientItemsData;
 
-		Helpers.hooks.callAll(CONSTANTS.HOOKS.OPEN_INTERFACE, this, actor, recipient, options, dialogData);
+		Helpers.hooks.callAll(CONSTANTS.HOOKS.OPEN_INTERFACE_NO_ACTOR, this, actor, recipientItemsData, options, dialogData);
 
 	}
 
@@ -54,10 +54,10 @@ export default class ItemPileInventoryApp extends SvelteApplication {
 		return Helpers.getActiveApps(`item-pile-inventory-no-actor-${id}`);
 	}
 
-	static async show(source, recipient = false, options = {}, dialogData = {}) {
+	static async show(source, recipientItemsData = false, options = {}, dialogData = {}) {
 		source = Utilities.getActor(source);
-		recipient = Utilities.getActor(recipient);
-		const result = Helpers.hooks.call(CONSTANTS.HOOKS.PRE_OPEN_INTERFACE, source, recipient, options, dialogData);
+		recipientItemsData = Utilities.getItemsData(recipientItemsData);
+		const result = Helpers.hooks.call(CONSTANTS.HOOKS.PRE_OPEN_INTERFACE_NO_ACTOR, source, recipientItemsData, options, dialogData);
 		if (result === false) return;
 		const apps = this.getActiveApps(source?.token?.uuid ?? source.uuid);
 		if (apps.length) {
@@ -68,14 +68,14 @@ export default class ItemPileInventoryApp extends SvelteApplication {
 		}
 		return new Promise((resolve) => {
 			options.resolve = resolve;
-			new this(source, recipient, options, dialogData).render(true, { focus: true, bypassItemPiles: true });
+			new this(source, recipientItemsData, options, dialogData).render(true, { focus: true, bypassItemPiles: true });
 		})
 	}
 
 	async close(options) {
-		const result = Helpers.hooks.call(CONSTANTS.HOOKS.PRE_CLOSE_INTERFACE, this, this.actor, this.recipient, options);
+		const result = Helpers.hooks.call(CONSTANTS.HOOKS.PRE_CLOSE_INTERFACE_NO_ACTOR, this, this.actor, this.recipientItemsData, options);
 		if (result === false) return;
-		Helpers.hooks.callAll(CONSTANTS.HOOKS.CLOSE_INTERFACE, this, this.actor, this.recipient, options);
+		Helpers.hooks.callAll(CONSTANTS.HOOKS.CLOSE_INTERFACE_NO_ACTOR, this, this.actor, this.recipientItemsData, options);
 		return super.close(options);
 	}
 

@@ -45,6 +45,8 @@ export default class ItemPileSocket {
 		RERENDER_TOKEN_HUD: "rerenderTokenHud",
 		USER_OPENED_INTERFACE: "userOpenedInterface",
 		USER_CLOSED_INTERFACE: "userClosedInterface",
+		USER_OPENED_INTERFACE_NO_ACTOR: "userOpenedInterfaceNoActor",
+		USER_CLOSED_INTERFACE_NO_ACTOR: "userClosedInterfaceNoActor",
 
 		/**
 		 * Item & attribute sockets
@@ -249,6 +251,12 @@ export const InterfaceTracker = {
 		});
 		Hooks.on(CONSTANTS.HOOKS.CLOSE_INTERFACE, (app) => {
 			ItemPileSocket.executeForOthers(ItemPileSocket.HANDLERS.USER_CLOSED_INTERFACE, game.user.id, app.id);
+		});
+		Hooks.on(CONSTANTS.HOOKS.OPEN_INTERFACE_NO_ACTOR, (app) => {
+			ItemPileSocket.executeForOthers(ItemPileSocket.HANDLERS.USER_OPENED_INTERFACE_NO_ACTOR, game.user.id, app.id);
+		});
+		Hooks.on(CONSTANTS.HOOKS.CLOSE_INTERFACE_NO_ACTOR, (app) => {
+			ItemPileSocket.executeForOthers(ItemPileSocket.HANDLERS.USER_CLOSED_INTERFACE_NO_ACTOR, game.user.id, app.id);
 		});
 	},
 

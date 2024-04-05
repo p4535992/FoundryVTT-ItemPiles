@@ -1,7 +1,7 @@
 import * as Helpers from "./helpers.js";
 import CONSTANTS from "../constants/constants.js";
 import SETTINGS from "../constants/settings.js";
-import { deletedActorCache } from "./caches.js";
+import { deletedActorCache, deletedItemCache } from "./caches.js";
 
 export function getActor(target) {
 	if (target instanceof Actor) return target;
@@ -41,6 +41,56 @@ export function getUuid(target) {
 	if (stringIsUuid(target)) return target;
 	const document = getDocument(target);
 	return document?.uuid ?? false;
+}
+
+export function getItem(target) {
+	if (target instanceof Item) return target;
+	let targetDoc = target;
+	if (stringIsUuid(target)) {
+		targetDoc = fromUuidSync(target);
+		if (!targetDoc && deletedItemCache.has(target)) {
+			return deletedItemCache.get(target);
+		}
+	}
+	targetDoc = getDocument(targetDoc);
+	return targetDoc?.character ?? targetDoc?.actor ?? targetDoc;
+}
+
+export function getItemData(target) {
+	const item = getItem(target);
+	if(item) {
+		let itemData = item instanceof Item ? item.toObject() : item;
+		itemData = itemData?.item ?? itemData;
+		return itemData;
+	} else {
+		return null;
+	}
+}
+
+/**
+ * Utility method to try to retrieve a array of items data
+ * @param {Item|ItemData|string|Item[]|ItemData[]|string[]} targets 
+ * @returns {ItemData[]} a items data array
+ */
+export function getItemsData(targets) {
+	if(!targets) {
+		return [];
+	}
+	const itemsData = [];
+	if(Array.isArray(targets)) {
+		for(const itemRef of targets) {
+			const itemData = getItemData(itemRef);
+			if(itemData) {
+				itemsData.push(itemData);
+			}
+		}
+	} else {
+		const itemData = getItemData(targets);
+		if(itemData) {
+            itemsData.push(itemData);
+        }
+	}
+	return itemsData;
 }
 
 /**

@@ -211,6 +211,10 @@ CONSTANTS.HOOKS = {
 	OPEN_INTERFACE: module`openInterface`,
 	PRE_CLOSE_INTERFACE: module`preCloseInterface`,
 	CLOSE_INTERFACE: module`closeInterface`,
+	PRE_OPEN_INTERFACE_NO_ACTOR: module`preOpenInterfaceNoActor`,
+	OPEN_INTERFACE_NO_ACTOR: module`openInterfaceNoActor`,
+	PRE_CLOSE_INTERFACE_NO_ACTOR: module`preCloseInterfaceNoActor`,
+	CLOSE_INTERFACE_NO_ACTOR: module`closeInterfaceNoActor`,
 	RENDER_VAULT_GRID_ITEM: module`renderVaultGridItem`,
 	PILE: {
 		PRE_CREATE: module`preCreateItemPile`,
